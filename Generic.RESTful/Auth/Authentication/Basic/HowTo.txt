@@ -1,0 +1,41 @@
+﻿
+
+//Client Tarafı
+function call(): void {
+
+    var o: JQueryAjaxSettings = {};
+    o.url = "/api/MyApi/GetNames"
+    o.type = "get";
+    o.dataType = "json";
+
+    o.username = "test";
+    o.password = "1991";
+
+
+    o.success = (r) => {
+        alert(JSON.stringify(r));
+    };
+
+    $.ajax(o);
+
+}
+
+
+//Api Controller için;
+[Authorize]  
+public class MyApiController : ApiController
+
+
+
+//Global Ajax;
+protected void Application_Start(object sender, EventArgs e)
+{
+    GlobalConfiguration.Configuration
+    .MessageHandlers.Add(new BasicAuthMessageHandler() //BasicAuthMessageHandler : BasicAuthMessageHandlerBase
+    {
+        PrincipalProvider = new DummyPrincipalProvider()// DummyPrincipalProvider : BasePrincipalProvider
+    });
+
+    WebApiSecurityConfig.Register(GlobalConfiguration.Configuration);
+}
+
