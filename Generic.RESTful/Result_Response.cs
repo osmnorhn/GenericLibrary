@@ -13,22 +13,16 @@ namespace Generic.RESTful
 {
     internal static class ResultConst
     {
-        internal static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings()
-        {
-            PreserveReferencesHandling = PreserveReferencesHandling.All
-        };
-
+        internal static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings();
         internal static readonly UTF8Encoding DefaultUTF8Encoding = new UTF8Encoding(false, true);
     }
 
     public class Result<T> : JsonResult<Response<T>>
     {
-
         public static Result<T> CreateInvalidParameters(ApiController controller)
         {
             return new Result<T>(Response<T>.InvalidParameters, controller);
         }
-
 
         public Result(Response<T> data, ApiController controller)
             : base(data, ResultConst.DefaultJsonSerializerSettings, ResultConst.DefaultUTF8Encoding, controller)
@@ -58,7 +52,6 @@ namespace Generic.RESTful
 
             this.image = image;
         }
-
 
         public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
