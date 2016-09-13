@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -10,21 +11,50 @@ namespace Generic.Utils
     {
         private static readonly HashSet<Type> PrimitiveTypes = new HashSet<Type>()
         {
-            CachedTypes.String,
-            CachedTypes.Boolean, CachedTypes.Byte,CachedTypes.ByteArray,CachedTypes.Char,CachedTypes.DateTime,CachedTypes.Decimal,CachedTypes.Double, CachedTypes.Single,
-            CachedTypes.Guid,CachedTypes.Int16,CachedTypes.Int32,CachedTypes.Int64, CachedTypes.UInt16, CachedTypes.UInt32, CachedTypes.UInt64, CachedTypes.SByte,
-            CachedTypes.Nullable_Boolean, CachedTypes.Nullable_Byte, CachedTypes.Nullable_Char,CachedTypes.Nullable_DateTime, CachedTypes.Nullable_Single,
-            CachedTypes.Nullable_Decimal,CachedTypes.Nullable_Double,CachedTypes.Nullable_Guid,CachedTypes.Nullable_Int16,CachedTypes.Nullable_Int32,CachedTypes.Nullable_Int64
-            ,CachedTypes.Nullable_UInt16, CachedTypes.Nullable_UInt32, CachedTypes.Nullable_UInt64, CachedTypes.Nullable_SByte
+            typeof(String),
+            typeof(Boolean),
+            typeof(Byte),
+            typeof(byte[]),
+            typeof(Char),
+            typeof(DateTime),
+            typeof(Decimal),
+            typeof(Double),
+            typeof(Single),
+            typeof(Guid),
+            typeof(Int16),
+            typeof(Int32),
+            typeof(Int64),
+            typeof(UInt16),
+            typeof(UInt32),
+            typeof(UInt64),
+            typeof(SByte),
+            typeof(Boolean?),
+            typeof(Byte?),
+            typeof(Char?),
+            typeof(DateTime),
+            typeof(Single),
+            typeof(Decimal?),
+            typeof(Double?),
+            typeof(Guid?),
+            typeof(Int16?),
+            typeof(Int32?),
+            typeof(Int64?)
+            ,
+            typeof(UInt16?),
+            typeof(UInt32?),
+            typeof(UInt64?),
+            typeof(SByte?)
         };
 
-        private static readonly MethodInfo MethodInfoCopyPropertiesFrom = typeof(EFExtensions).GetMethod("CopyPropertiesFrom");
+        private static readonly MethodInfo MethodInfoCopyPropertiesFrom =
+            typeof(EFExtensions).GetMethod("CopyPropertiesFrom");
+
         public static void CopyPropertiesFrom<T>(this T destObject, T sourceObject)
         {
-            if (destObject == null)
-                throw new ArgumentNullException(nameof(destObject));
-            if (sourceObject == null)
-                throw new ArgumentNullException(nameof(sourceObject));
+            //if (destObject == null)
+            //   throw new ArgumentNullException(nameof(destObject));
+            //if (sourceObject == null)
+            // throw new ArgumentNullException(nameof(sourceObject));
 
             foreach (PropertyInfo pi in typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
@@ -38,15 +68,18 @@ namespace Generic.Utils
                     }
                     else
                     {
-                        // if (piType.IsAssignableFrom(typeof(IEnumerable))) continue;//Şimdilik
-                        if (piType.IsInterface || piType.IsAbstract) continue; ;
+                        if (typeof(IEnumerable).IsAssignableFrom(piType)) continue; //Şimdilik
 
-                        object sourcePropertyValueEntity = pi.GetValue(sourceObject);//this is proxy Type
-                        if (sourcePropertyValueEntity != null)//Custom type and not null
+                        if (piType.IsInterface || piType.IsAbstract) continue;
+                        ;
+
+                        object sourcePropertyValueEntity = pi.GetValue(sourceObject); //this is proxy Type
+                        if (sourcePropertyValueEntity != null) //Custom type and not null
                         {
-                            object destEmptyObject = Activator.CreateInstance(piType);//Burası proxy değil işte.
+                            object destEmptyObject = Activator.CreateInstance(piType); //Burası proxy değil işte.
                             MethodInfo mi = MethodInfoCopyPropertiesFrom.MakeGenericMethod(piType);
-                            mi.Invoke(null, BindingFlags.Static, null, new[] { destEmptyObject, sourcePropertyValueEntity }, null);
+                            mi.Invoke(null, BindingFlags.Static, null,
+                                new[] { destEmptyObject, sourcePropertyValueEntity }, null);
 
                             pi.SetValue(destObject, destEmptyObject);
                         }
@@ -64,7 +97,7 @@ namespace Generic.Utils
         }
 
         public static TEntity ToPocoSafe<TEntity>(this TEntity proxy, DbContext context)
-           where TEntity : new()
+            where TEntity : new()
         {
             bool temp = context.Configuration.LazyLoadingEnabled;
             try
