@@ -125,5 +125,20 @@ namespace Generic.Utils
 
             return ret;
         }
+
+        public static IEnumerable<TEntity> ToPagedList<TEntity>(this IEnumerable<TEntity> list, int pageNum, int take)
+        {
+            IEnumerable<TEntity> entityList;
+            if (!list.Any())
+            {
+                return list;
+            }
+
+            var skip = pageNum * take;
+            entityList = list.Skip(skip).Take(list.Count() < skip ? list.Count() : take);
+
+
+            return entityList;
+        }
     }
 }

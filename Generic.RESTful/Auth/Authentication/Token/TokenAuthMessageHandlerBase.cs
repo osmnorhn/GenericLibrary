@@ -57,14 +57,14 @@ namespace Generic.RESTful
         {
             get
             {
-                if (null == this.table)
+                if (this.table == null)
                 {
                     lock (syncRoot)
                     {
-                        if (null == this.table)
+                        if (this.table == null)
                         {
                             this.table = this.CreateTokenTable();
-                            if (null == this.table)
+                            if (this.table == null)
                                 throw new NotImplementedException("TokenAuthMessageHandlerBase.CreateTokenTable");
                         }
                     }
@@ -73,6 +73,6 @@ namespace Generic.RESTful
                 return this.table;
             }
         }
-       
+
     }
 }
